@@ -6,10 +6,12 @@ import subprocess
 botToken_API = "5898652267:AAFqK7EwtLJMVLd6_TUYzg0fcmsTjIVfimo"
 
 bot = telebot.TeleBot(botToken_API)
-# Parâmetros
 
-showMenuCommand = "/menu"                        #comando para mostrar menu
-limiteResultados = 70
+####################################################################################################
+################################## Parâmetros Globais ##############################################
+
+showMenuCommand = "/menu"            #comando para mostrar menu
+limiteResultados = 70                #limite de resultados que aparecerão
 sistemaOperacional = ['Windows', 'Linux']
 soHospedagem = sistemaOperacional[0] # escolher   0 - Windows 
                                      #            1 - Linux
@@ -26,33 +28,39 @@ Selecione uma opção:
 """
 
 ####################################################################################################
-# FilePaths
+####################################### FilePaths ##################################################
 filename = 'c:\\Users\\Parizzi\\Desktop\\jbr_PF.txt'
 
 
 
 
 ####################################################################################################
-# Funções Greps
-def run_wgrep(pattern): #Windows
+##################################### Funções Greps ###############################################
+
+#Windows
+def run_wgrep(pattern):
   comando = ['powershell.exe', 'findstr', '/i', '/C:'+"\""+pattern+"\"", filename]
   resultado = subprocess.run(comando, capture_output=True, text=True)
 
   if resultado.returncode == 0:
       saida = resultado.stdout
       linhas = len(saida.strip().split('\n'))
+      print('pesquisa realizada com o input: '+pattern)
       print(f"Número de pessoas que possuem nome ou CPF similar: {linhas}")
       if linhas > limiteResultados:
-          print("muitos resultados, seja mais específico no nome ou CPF.")
+          print("O input encontrou mais resultados que o limite definido, o usuário foi orientado para ser mais específico.")
           return(f"muitos resultados que contenham \"{pattern}\": {linhas} pessoas, seja mais específico no nome ou CPF")
       else:
+          print("resposta enviada para o solicitante")
           return((f"Número de pessoas com nome ou CPF similar: {linhas}\n\n")+saida)
   else:
       erro = resultado.stderr
       print(erro)
       return("Não foi possível encontrar este nome ou CPF")
 
-def run_grep(pattern): #Linux
+
+#Linux
+def run_grep(pattern):
     try:
         # Executa o comando 'grep' com as opções e argumentos fornecidos
         output = subprocess.check_output(['grep', '-i', pattern, filename])
@@ -66,7 +74,7 @@ def run_grep(pattern): #Linux
         # Caso ocorra um erro ao executar o comando 'grep' - verificar quando não acha resultado
         print(f"Erro: {e}")
 
-# Exemplo de uso
+# Exemplo de uso no linux - precisa testar
 #arquivo = 'exemplo.txt'
 #padrao = 'palavra'
 #run_grep(padrao, arquivo)
@@ -74,13 +82,13 @@ def run_grep(pattern): #Linux
 
 
 ####################################################################################################
-# Comandos - Opções
-@bot.message_handler(commands=["cpf", "CPF", "Cpf"])
+################################# Comandos - Opções ################################################
+@bot.message_handler(commands=["cpf", "CPF", "Cpf"]) #tipos de comandos aceitos para iniciar o código
 def cpf(mensagem):
   cpf_em_pesquisa = mensagem.text.lower().split("/cpf ", 1)[1] # text.lower() deixa Case Insensitive
-  bot.reply_to(mensagem, "Pesquisando CPF: " + cpf_em_pesquisa)
+  bot.reply_to(mensagem, "Pesquisando CPF: " + cpf_em_pesquisa)  # manobra para que seja dado o comando /cpf <numero>
 
-
+#cpf
   if soHospedagem == "Windows": #Verifica se o bot está em um windows
     resposta = run_wgrep(cpf_em_pesquisa)
   elif soHospedagem == "Linux":
@@ -90,7 +98,7 @@ def cpf(mensagem):
 
   bot.reply_to(mensagem, resposta) #ato de responder
 
-
+#nome
 @bot.message_handler(commands=["nome", "Nome", "NOME"])
 def nome(mensagem):
   nome_em_pesquisa = mensagem.text.lower().split("/nome ", 1)[1] # text.lower() deixa Case Insensitive
@@ -107,7 +115,7 @@ def nome(mensagem):
   bot.reply_to(mensagem, resposta) #ato de responder
 
 
-@bot.message_handler(commands=["opt2"])
+@bot.message_handler(commands=["opt2"]) #usar no futuro
 def nome(mensagem):
   bot.reply_to("pesquisando Opt...")
     
@@ -122,7 +130,7 @@ def nome(mensagem):
     bot.reply_to(mensagem, resposta)
     pass
 
-@bot.message_handler(commands=["opt3"])
+@bot.message_handler(commands=["opt3"]) #usar no futuro
 def opt3(mensagem):
     bot.reply_to("essa opção ainda será construída para outros fins")    
 
@@ -145,7 +153,7 @@ def opt3(mensagem):
 ########################################################################################################
 #funcionamento inicial do bot
 def initialInput(mensagem):
-    if mensagem.text == showMenuCommand:
+    if mensagem.text.lower() == showMenuCommand:  #text.lower() deixa Case Insensitive
         return True
     else:
         return False
