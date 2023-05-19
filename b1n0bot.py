@@ -39,6 +39,7 @@ filename = 'c:\\Users\\Parizzi\\Desktop\\jbr_PF.txt'
 
 #Windows
 def run_wgrep(pattern):
+  print("usuário deu o Input: "+pattern)
   comando = ['powershell.exe', 'findstr', '/i', '/C:'+"\""+pattern+"\"", filename]
   resultado = subprocess.run(comando, capture_output=True, text=True)
 
@@ -56,6 +57,8 @@ def run_wgrep(pattern):
   else:
       erro = resultado.stderr
       print(erro)
+      print("Usuário deu o Input: "+pattern)
+      print("Não foi possível encontrar este nome ou CPF")
       return("Não foi possível encontrar este nome ou CPF")
 
 
