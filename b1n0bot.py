@@ -49,16 +49,16 @@ def run_wgrep(pattern):
       print('pesquisa realizada com o input: '+pattern)
       print(f"Número de pessoas que possuem nome ou CPF similar: {linhas}")
       if linhas > limiteResultados:
-          print("O input encontrou mais resultados que o limite definido, o usuário foi orientado para ser mais específico.")
+          print("O input encontrou mais resultados que o limite definido, o usuário foi orientado para ser mais específico.\n")
           return(f"muitos resultados que contenham \"{pattern}\": {linhas} pessoas, seja mais específico no nome ou CPF")
       else:
-          print("resposta enviada para o solicitante")
+          print("resposta enviada para o solicitante\n")
           return((f"Número de pessoas com nome ou CPF similar: {linhas}\n\n")+saida)
   else:
       erro = resultado.stderr
       print(erro)
       print("Usuário deu o Input: "+pattern)
-      print("Não foi possível encontrar este nome ou CPF")
+      print("Não foi possível encontrar este nome ou CPF\n")
       return("Não foi possível encontrar este nome ou CPF")
 
 
@@ -86,35 +86,46 @@ def run_grep(pattern):
 
 ####################################################################################################
 ################################# Comandos - Opções ################################################
+
 @bot.message_handler(commands=["cpf", "CPF", "Cpf"]) #tipos de comandos aceitos para iniciar o código
 def cpf(mensagem):
-  cpf_em_pesquisa = mensagem.text.lower().split("/cpf ", 1)[1] # text.lower() deixa Case Insensitive
-  bot.reply_to(mensagem, "Pesquisando CPF: " + cpf_em_pesquisa)  # manobra para que seja dado o comando /cpf <numero>
 
-#cpf
-  if soHospedagem == "Windows": #Verifica se o bot está em um windows
-    resposta = run_wgrep(cpf_em_pesquisa)
-  elif soHospedagem == "Linux":
-    resposta = run_grep(cpf_em_pesquisa)
+  if mensagem.text.lower() == "/cpf":  #condição impede que o bot quebre ao se digitar o comando sem argumentos
+     print("usuário digitou /cpf sozinho")
+     resposta = "Insira os números após o comando, exemplo: \n/cpf 12345678911"
   else:
-    resposta = "erro a definir Sistema Operacional de hospedagem"
+    cpf_em_pesquisa = mensagem.text.lower().split("/cpf ", 1)[1] # text.lower() deixa Case Insensitive
+    bot.reply_to(mensagem, "Pesquisando CPF: " + cpf_em_pesquisa)  # manobra para que seja dado o comando /cpf <numero>
+
+  #cpf
+    if soHospedagem == "Windows": #Verifica se o bot está em um windows
+      resposta = run_wgrep(cpf_em_pesquisa)
+    elif soHospedagem == "Linux":
+      resposta = run_grep(cpf_em_pesquisa)
+    else:
+      resposta = "erro a definir Sistema Operacional de hospedagem"
 
   bot.reply_to(mensagem, resposta) #ato de responder
 
 #nome
 @bot.message_handler(commands=["nome", "Nome", "NOME"])
 def nome(mensagem):
-  nome_em_pesquisa = mensagem.text.lower().split("/nome ", 1)[1] # text.lower() deixa Case Insensitive
-  bot.reply_to(mensagem, "Pesquisando nome: " + nome_em_pesquisa)
-
-
-  if soHospedagem == "Windows": #Verifica se o bot está em um windows
-    resposta = run_wgrep(nome_em_pesquisa)
-  elif soHospedagem == "Linux":
-    resposta = run_grep(nome_em_pesquisa)
+  
+  if mensagem.text.lower() == "/nome": #condição impede que o bot quebre ao se digitar o comando sem argumentos
+    print("usuário digitou /nome sozinho")
+    resposta = "Insira os números após o comando, exemplo: \n/nome jose braganca sou"
   else:
-    resposta = "erro a definir Sistema Operacional de hospedagem"
+    nome_em_pesquisa = mensagem.text.lower().split("/nome ", 1)[1] # text.lower() deixa Case Insensitive
+    bot.reply_to(mensagem, "Pesquisando nome: " + nome_em_pesquisa)
 
+
+    if soHospedagem == "Windows": #Verifica se o bot está em um windows
+      resposta = run_wgrep(nome_em_pesquisa)
+    elif soHospedagem == "Linux":
+      resposta = run_grep(nome_em_pesquisa)
+    else:
+      resposta = "erro a definir Sistema Operacional de hospedagem"
+  
   bot.reply_to(mensagem, resposta) #ato de responder
 
 
