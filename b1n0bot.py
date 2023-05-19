@@ -20,46 +20,51 @@ initialMessage = """
 b1n0 Consultant
 
 Selecione uma opção:
-    /cpf       - Puxa dados com o cpf - não usar pontuação (exemplo: /cpf 12345678911 )
+    /cpf  <número>     - Puxa dados com o cpf [não usar pontuação] (exemplo: /cpf 12345678911 )
 
-    /nome     - Puxa dados com o nome - não usar acentuação (exemplo: /nome jose braganca sou)
+    /nome  <nome>     - Puxa dados com o nome [não usar acentuação] (exemplo: /nome jose braganca sou)
 
     /opt3      - opções futuras...
 """
+
 
 ####################################################################################################
 ####################################### FilePaths ##################################################
 filename = 'c:\\Users\\Parizzi\\Desktop\\jbr_PF.txt'
 
 
+####################################################################################################
+########################## função identificadora de usuário ########################################
+
+def getUser(mensagem):
+  return(f"User_ID: {mensagem.from_user.id} | Nome: {mensagem.from_user.first_name} {mensagem.from_user.last_name} | Idioma: {mensagem.from_user.language_code} | Is Bot: {mensagem.from_user.is_bot} >>> ")
 
 
 ####################################################################################################
-##################################### Funções Greps ###############################################
+##################################### Funções Greps ################################################
 
 #Windows
 def run_wgrep(pattern):
-  print("usuário deu o Input: "+pattern)
+  print("System - Procurando o Input: "+pattern)
   comando = ['powershell.exe', 'findstr', '/i', '/C:'+"\""+pattern+"\"", filename]
   resultado = subprocess.run(comando, capture_output=True, text=True)
 
   if resultado.returncode == 0:
       saida = resultado.stdout
       linhas = len(saida.strip().split('\n'))
-      print('pesquisa realizada com o input: '+pattern)
-      print(f"Número de pessoas que possuem nome ou CPF similar: {linhas}")
+      print(f"System - Número de pessoas que possuem nome ou CPF similar: {linhas}")
       if linhas > limiteResultados:
-          print("O input encontrou mais resultados que o limite definido, o usuário foi orientado para ser mais específico.\n")
+          print("System - O input encontrou mais resultados que o limite definido, o usuário foi orientado para ser mais específico.\n")
           return(f"muitos resultados que contenham \"{pattern}\": {linhas} pessoas, seja mais específico no nome ou CPF")
       else:
-          print("resposta enviada para o solicitante\n")
+          print("System - resposta enviada para o solicitante\n")
           return((f"Número de pessoas com nome ou CPF similar: {linhas}\n\n")+saida)
   else:
       erro = resultado.stderr
+      print("System - Erro ao procurar o Input: "+pattern)
+      print("System - Não foi encontrado este nome ou CPF, o usuário foi orientado")
       print(erro)
-      print("Usuário deu o Input: "+pattern)
-      print("Não foi possível encontrar este nome ou CPF\n")
-      return("Não foi possível encontrar este nome ou CPF")
+      return("O sistema não encontrou este Nome ou CPF.\nSeja menos específico no nome ou número e lembre-se de não utilizar acentuação")
 
 
 #Linux
@@ -83,15 +88,15 @@ def run_grep(pattern):
 #run_grep(padrao, arquivo)
 
 
-
 ####################################################################################################
 ################################# Comandos - Opções ################################################
 
-@bot.message_handler(commands=["cpf", "CPF", "Cpf"]) #tipos de comandos aceitos para iniciar o código
+#PESQUISA CPF
+@bot.message_handler(commands=["cpf", "CPF", "Cpf", "CPf", "cpF"]) #tipos de comandos aceitos para iniciar o código
 def cpf(mensagem):
 
   if mensagem.text.lower() == "/cpf":  #condição impede que o bot quebre ao se digitar o comando sem argumentos
-     print("usuário digitou /cpf sozinho")
+     print(getUser(mensagem)+"digitou o /cpf sozinho e foi orientado")
      resposta = "Insira os números após o comando, exemplo: \n/cpf 12345678911"
   else:
     cpf_em_pesquisa = mensagem.text.lower().split("/cpf ", 1)[1] # text.lower() deixa Case Insensitive
@@ -99,36 +104,42 @@ def cpf(mensagem):
 
   #cpf
     if soHospedagem == "Windows": #Verifica se o bot está em um windows
+      print(getUser(mensagem)+"está fazendo busca do CPF: "+cpf_em_pesquisa)
       resposta = run_wgrep(cpf_em_pesquisa)
     elif soHospedagem == "Linux":
+      print(getUser(mensagem)+"está fazendo busca do CPF: "+cpf_em_pesquisa)
       resposta = run_grep(cpf_em_pesquisa)
     else:
-      resposta = "erro a definir Sistema Operacional de hospedagem"
+      print("System - erro a definir Sistema Operacional de hospedagem na busca de CPF, verificar parâmetros globais")
+      resposta = "Erro a definir Sistema Operacional de hospedagem, contate o administrador para verificar parâmetros globais do b1n0bot"
 
   bot.reply_to(mensagem, resposta) #ato de responder
 
-#nome
-@bot.message_handler(commands=["nome", "Nome", "NOME"])
+#PESQUISA NOME
+@bot.message_handler(commands=["nome", "Nome", "NOME", "NOme", "NoMe"])
 def nome(mensagem):
   
   if mensagem.text.lower() == "/nome": #condição impede que o bot quebre ao se digitar o comando sem argumentos
-    print("usuário digitou /nome sozinho")
-    resposta = "Insira os números após o comando, exemplo: \n/nome jose braganca sou"
+    print(getUser(mensagem)+"digitou o /nome sozinho e foi orientado")
+    resposta = "Insira o nome após o comando, exemplo: \n/nome jose braganca sou"
   else:
     nome_em_pesquisa = mensagem.text.lower().split("/nome ", 1)[1] # text.lower() deixa Case Insensitive
-    bot.reply_to(mensagem, "Pesquisando nome: " + nome_em_pesquisa)
+    bot.reply_to(mensagem, "Pesquisando nome: "+nome_em_pesquisa)
 
 
     if soHospedagem == "Windows": #Verifica se o bot está em um windows
+      print(getUser(mensagem)+"está fazendo busca do nome: "+nome_em_pesquisa)
       resposta = run_wgrep(nome_em_pesquisa)
     elif soHospedagem == "Linux":
+      print(getUser(mensagem)+"está fazendo busca do nome: "+nome_em_pesquisa)
       resposta = run_grep(nome_em_pesquisa)
     else:
-      resposta = "erro a definir Sistema Operacional de hospedagem"
+      print("System - erro a definir Sistema Operacional de hospedagem na busca de NOME, verificar parâmetros globais")
+      resposta = "Erro a definir Sistema Operacional de hospedagem, contate o administrador para verificar parâmetros globais do b1n0bot"
   
   bot.reply_to(mensagem, resposta) #ato de responder
 
-
+#Opção FUTURA
 @bot.message_handler(commands=["opt2"]) #usar no futuro
 def nome(mensagem):
   bot.reply_to("pesquisando Opt...")
@@ -144,6 +155,7 @@ def nome(mensagem):
     bot.reply_to(mensagem, resposta)
     pass
 
+#Opção FUTURA
 @bot.message_handler(commands=["opt3"]) #usar no futuro
 def opt3(mensagem):
     bot.reply_to("essa opção ainda será construída para outros fins")    
@@ -168,8 +180,10 @@ def opt3(mensagem):
 #funcionamento inicial do bot
 def initialInput(mensagem):
     if mensagem.text.lower() == showMenuCommand:  #text.lower() deixa Case Insensitive
+        print(getUser(mensagem)+"digitou "+mensagem.text.lower()+" e visualizou o Menu inicial")
         return True
     else:
+        print(getUser(mensagem)+"escreveu \""+mensagem.text.lower()+"\"")
         return False
 
 @bot.message_handler(func=initialInput)
