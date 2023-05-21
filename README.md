@@ -14,3 +14,8 @@ Comandos:
 /cpf "numero" - Busca as informações da pessoa com base no cpf
 
 /nome "nome" - Busca as informações da pessoa com base no nome
+
+
+Requerimentos
+Python >= 3.10
+$pip install telebot
