@@ -16,6 +16,9 @@ Comandos:
 /nome "nome" - Busca as informações da pessoa com base no nome
 
 
-Requerimentos
+Requerimentos:
 Python >= 3.10
 $pip install telebot
+
+Executar:
+python3 b1n0bot.py
