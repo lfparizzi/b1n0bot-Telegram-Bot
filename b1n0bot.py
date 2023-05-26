@@ -3,7 +3,7 @@
 import telebot
 import subprocess
 
-botToken_API = "5898652267:AAFqK7EwtLJMVLd6_TUYzg0fcmsTjIVfimo"
+botToken_API = "seutoken"
 
 bot = telebot.TeleBot(botToken_API)
 
