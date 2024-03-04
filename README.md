@@ -4,7 +4,7 @@ Este foi um BOT funcional que desenvolvi do zero em Python para o Telegram com o
 
 Atualmente ele funciona consultando uma base de dados para puxar informações sobre uma pessoa utilizando biblioteca de subprocessos para garantir a performance da busca
 
-Como a intenção do bot é que ele seja modular e escalável, mais opções estarão disponíveis no futuro para atender as minhas necessidades de comando e controle no universo de Cibersegurança.
+Como a intenção do bot é que ele seja modular e escalável, mais opções estarão disponíveis no futuro para atender as minhas necessidades.
 
 
 Comandos:
